@@ -1,41 +1,31 @@
-require "net/http"
-require "uri"
-require "json"
+require "httparty"
 
 class ApiClient
+  include HTTParty
+  base_uri "https://open-api.tiktokglobalshop.com"
+
   def initialize
-    @base_url = "https://open-api.tiktokglobalshop.com"
   end
 
-  def call_api(endpoint, method = "GET", request_data = {})
-    url = URI.join(@base_url, endpoint).to_s
-    uri = URI.parse(url)
-    puts uri
+  def call_api(endpoint, method = :get, request_data = {})
+    options = {
+      body: request_data.to_json,
+      headers: { "Content-Type" => "application/json" }
+    }
 
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = (uri.scheme == "https")
+    puts "https://open-api.tiktokglobalshop.com" + endpoint
+    response = self.class.send(method, endpoint, options)
+    handle_response(response)
+  end
 
-    request = case method.upcase
-    when "POST"
-        Net::HTTP::Post.new(uri.path, { "Content-Type" => "application/json" })
-    when "GET"
-        Net::HTTP::Get.new(uri)
-    when "PUT"
-        Net::HTTP::Put.new(uri.path, { "Content-Type" => "application/json" })
-    when "DELETE"
-        Net::HTTP::Delete.new(uri.path)
+  private
+
+  def handle_response(response)
+    case response.code
+    when 200..299
+      { code: response.code, message: response.parsed_response }
     else
-        raise "Unsupported HTTP method: #{method}"
-    end
-
-    request.body = request_data.to_json unless method.upcase == "GET"
-    response = http.request(request)
-
-    case response
-    when Net::HTTPSuccess
-      { code: response.code, message: JSON.parse(response.body) }
-    else
-      { code: response.code, error: response.message, message: JSON.parse(response.body) }
+      { code: response.code, error: response.message, message: response.parsed_response }
     end
   end
 end

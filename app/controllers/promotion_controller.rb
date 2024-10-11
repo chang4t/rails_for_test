@@ -15,8 +15,8 @@ class PromotionController < ApplicationController
     data = {
       "begin_time": begin_time.to_i,
       "end_time": end_time.to_i,
-      "product_type": 1, # SPU
-      "promotion_type": 1, # FixedPrice
+      "product_type": 1,
+      "promotion_type": 1,
       "request_serial_no": "create202208291503530001100220033",
       "title": "DiscountEvent1011"
     }
