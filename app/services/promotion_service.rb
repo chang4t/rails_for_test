@@ -2,9 +2,10 @@
 class PromotionService
     def initialize
         @config = {
-            app_key: "38abcd",
-            access_token: "access_token",
-            sign: "5361235029d141222525e303d742f9e38aea052d10896d3197ab9d6233730b8c"
+            app_key: "***",
+            access_token: "***",
+            sign: "***",
+            shop_id: "***"
         }
         @api_client = ApiClient.new
     end
@@ -12,9 +13,10 @@ class PromotionService
     def add(params = {})
         url = "/api/promotion/activity/create"
         url << "?app_key=#{@config[:app_key]}"
-        url << "&access_token=#{@config[:access_token]}"
-        url << "&sign=#{@config[:sign]}"
         url << "&timestamp=#{Time.now.to_i}"
+        url << "&sign=#{@config[:sign]}"
+        url << "&access_token=#{@config[:access_token]}"
+        url << "&shop_id=#{@config[:shop_id]}"
 
         @api_client.call_api(url, "POST", params)
     end
